@@ -1,0 +1,44 @@
+version: "3.9"
+services:
+  asterisk:
+    image: andrius/asterisk:stable
+    container_name: asterisk4
+    restart: unless-stopped
+    ports:
+      - "5060:5060/udp"        # SIP
+      - "5061:5061/udp"        # SIP
+      - "8088:8088/tcp"        # WebRTC / HTTP TLS
+      - "8089:8089/tcp"        # WebRTC / HTTP TLS
+      - "10000:20000/udp"  # RTP media range
+    # volumes:
+    #   - ./asterisk/config:/etc/asterisk
+    #   - ./asterisk/logs:/var/log/asterisk
+    #   - ./asterisk/spool:/var/spool/asterisk
+
+    volumes:
+      # --- Core configs ---
+      - ./asterisk_configs/ari.conf:/etc/asterisk/ari.conf
+      - ./asterisk_configs/extensions.conf:/etc/asterisk/extensions.conf
+      - ./asterisk_configs/http.conf:/etc/asterisk/http.conf
+      - ./asterisk_configs/pjsip.conf:/etc/asterisk/pjsip.conf
+      # - ./asterisk_configs/modules.conf:/etc/asterisk/modules.conf
+      # - ./asterisk_configs/rtp.conf:/etc/asterisk/rtp.conf
+      # --- HTTP / WebRTC ---
+      - ./phone:/var/lib/asterisk/static-http/
+      
+      - ./ssl:/var/lib/asterisk/ssl/
+
+    
+    # ✅ ADD THIS
+      - ./init-permissions.sh:/init-permissions.sh
+
+    # ✅ ADD THIS
+    entrypoint: ["/bin/bash", "/init-permissions.sh"]
+
+      
+      # --- Logging ---
+      # - ./asterisk_configs/logger.conf:/etc/asterisk/logger.conf
+      # --- Optional voicemail ---
+      # - ./asterisk_configs/voicemail.conf:/etc/asterisk/voicemail.conf
+    tty: true
+    stdin_open: true
