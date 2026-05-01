@@ -30,7 +30,7 @@ services:
 
     
     # ✅ ADD THIS
-      - ./init-permissions.sh:/init-permissions.sh
+      - ./fix-asterisk-permissions.sh:/init-permissions.sh
 
     # ✅ ADD THIS
     entrypoint: ["/bin/bash", "/init-permissions.sh"]
